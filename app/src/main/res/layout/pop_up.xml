@@ -2,8 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-   android:background="@drawable/corner_background"
-    android:padding="10dp"
+
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -46,6 +45,7 @@
                 android:layout_alignParentBottom="true"
                 android:layout_marginBottom="13dp"
                 android:layout_marginLeft="10dp"
+
                 android:text="Password generator"
                 android:textAlignment="center"
                 android:textColor="@color/black"
@@ -63,7 +63,7 @@
 
         </RelativeLayout>
 
-        <ListView
+        <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/list"
             android:layout_width="match_parent"
             android:layout_height="450dp"

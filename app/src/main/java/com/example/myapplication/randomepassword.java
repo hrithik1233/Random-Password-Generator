@@ -2,6 +2,8 @@ package com.example.myapplication;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -12,9 +14,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Environment;
+import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -37,7 +42,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class randomepassword extends AppCompatActivity {
+public class randomepassword extends AppCompatActivity implements AdapterInterface{
     EditText text;
     TextView listtext;
     SeekBar seekBar;
@@ -45,6 +50,9 @@ public class randomepassword extends AppCompatActivity {
     int seekcount=0;
     View v;
     Dialog dialog;
+    RecyclerView recyclerView;
+    RecyclerAdapter adapter;
+
     List <String> password_list=new ArrayList<String>();
     @SuppressLint("MissingInflatedId")
     @Override
@@ -59,7 +67,13 @@ public class randomepassword extends AppCompatActivity {
 
         dialog = new Dialog(randomepassword.this);
         dialog.setContentView(R.layout.pop_up);
+        dialog.getWindow().setLayout(ViewGroup.LayoutParams
+                .MATCH_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialog.getWindow().setGravity(Gravity.BOTTOM);
+        dialog.getWindow().getAttributes().windowAnimations=R.style.DialogAnimation;
 
+        recyclerView=dialog.findViewById(R.id.list);
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this,
@@ -172,12 +186,9 @@ public class randomepassword extends AppCompatActivity {
 
     public void onClick(View view) {
 
-       String tmp=text.getText().toString();
+        String tmp = text.getText().toString();
         password_list.clear();
 
-        ListView listView = dialog.findViewById(R.id.list);
-        ArrayAdapter<String> arr = new ArrayAdapter<String>(getApplicationContext(),
-                androidx.appcompat.R.layout.support_simple_spinner_dropdown_item, password_list);
         if (seekcount == 0) {
             password_list.add("Please select a value from the parameter");
         } else {
@@ -187,22 +198,13 @@ public class randomepassword extends AppCompatActivity {
 
                 temp--;
             }
-            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                    ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-                    ClipData clipdata = ClipData.newPlainText("text", password_list.get(i));
-                    clipboard.setPrimaryClip(clipdata);
-                    Toast.makeText(randomepassword.this, "password copied to clipboard", Toast.LENGTH_SHORT).show();
-                }
-            });
+           adapter=new RecyclerAdapter(this,password_list,this);
+            recyclerView.setAdapter(adapter);
+            recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-            text.setText(tmp);
+            dialog.show();
 
         }
-        listView.setAdapter(arr);
-        dialog.show();
-
     }
     public void save(View v) {
         if(seekcount>0) {
@@ -212,4 +214,12 @@ public class randomepassword extends AppCompatActivity {
         }
     }
 
+    // Recycler view Button click listener
+    @Override
+    public void onButtonClickListener(int pos) {
+        ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+        ClipData clipdata = ClipData.newPlainText("text", password_list.get(pos));
+        clipboard.setPrimaryClip(clipdata);
+        Toast.makeText(this, "Password is copied", Toast.LENGTH_SHORT).show();
+    }
 }
