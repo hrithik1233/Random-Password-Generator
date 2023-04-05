@@ -200,7 +200,7 @@ public class randomepassword extends AppCompatActivity {
             text.setText(tmp);
 
         }
-
+        listView.setAdapter(arr);
         dialog.show();
 
     }
