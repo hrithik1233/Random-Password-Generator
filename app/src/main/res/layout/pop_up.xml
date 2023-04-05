@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+   android:background="@drawable/corner_background"
+    android:padding="10dp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:padding="1dp"
+        android:background="@color/orange"
+        app:layout_constraintHorizontal_bias="0.454"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:background="@color/orange"
+            >
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignEnd="@+id/repeat"
+                android:layout_centerVertical="true"
+                android:layout_margin="40dp"
+
+                android:layout_marginStart="30dp"
+                android:layout_marginTop="30dp"
+                android:layout_marginEnd="30dp"
+                android:layout_marginBottom="30dp"
+                android:onClick="save"
+                android:src="@drawable/save_24" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_marginBottom="13dp"
+                android:layout_marginLeft="10dp"
+                android:text="Password generator"
+                android:textAlignment="center"
+                android:textColor="@color/black"
+                android:textStyle="bold" />
+
+            <ImageView
+                android:id="@+id/repeat"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="30dp"
+                android:onClick="onClick"
+                android:src="@drawable/baseline_replay_24" />
+
+        </RelativeLayout>
+
+        <ListView
+            android:id="@+id/list"
+            android:layout_width="match_parent"
+            android:layout_height="450dp"
+            android:background="#F1F1F1"
+
+            android:paddingTop="5dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            tools:layout_editor_absoluteX="1dp" />
+
+    </LinearLayout>
+</LinearLayout>
