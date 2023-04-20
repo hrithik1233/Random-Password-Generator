@@ -12,6 +12,7 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -43,10 +44,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class randomepassword extends AppCompatActivity implements AdapterInterface{
-    EditText text;
+    EditText text,len;
     TextView listtext;
     SeekBar seekBar;
     Button generateList;
+    Switch upr,lwr,num,syml;
     int seekcount=0;
     View v;
     Dialog dialog;
@@ -57,13 +59,48 @@ public class randomepassword extends AppCompatActivity implements AdapterInterfa
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        // seek bar intialization
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_randomepassword);
        text=findViewById(R.id.mainText);
         seekBar=findViewById(R.id.seekBar);
         listtext =findViewById(R.id.listNum);
         generateList=findViewById(R.id.generateList);
+        len=findViewById(R.id.length);
+
+        upr=findViewById(R.id.switch1);
+        lwr=findViewById(R.id.switch2);
+        num=findViewById(R.id.switch3);
+        syml=findViewById(R.id.switch4);
+        SharedPreferences pre=getSharedPreferences("OPTIONS",MODE_PRIVATE);
+        upr.setChecked(pre.getBoolean("Upper",true));
+        lwr.setChecked(pre.getBoolean("Lower",true));
+        num.setChecked(pre.getBoolean("Number",true));
+        syml.setChecked(pre.getBoolean("Symbols",true));
+        seekBar.setProgress(pre.getInt("SeekBar",0));
+        len.setText(pre.getString("Length","8"));
+        listtext.setText(Integer.toString(pre.getInt("SeekBar",0)));
+        //For saving prefrence button
+
+        Button pref=findViewById(R.id.prefrencebtn);
+        pref.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                SharedPreferences pre=getSharedPreferences("OPTIONS",MODE_PRIVATE);
+                SharedPreferences.Editor editor=pre.edit();
+                editor.putBoolean("Upper",upr.isChecked());
+                editor.putBoolean("Lower",lwr.isChecked());
+                editor.putBoolean("Number",num.isChecked());
+                editor.putBoolean("Symbols",syml.isChecked());
+                editor.putInt("SeekBar",seekBar.getProgress());
+                editor.putString("Length",len.getText().toString());
+                editor.apply();
+
+                Toast.makeText(randomepassword.this, "Preffrence Saved", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        //pop up Dialog box
 
         dialog = new Dialog(randomepassword.this);
         dialog.setContentView(R.layout.pop_up);
@@ -74,16 +111,6 @@ public class randomepassword extends AppCompatActivity implements AdapterInterfa
         dialog.getWindow().getAttributes().windowAnimations=R.style.DialogAnimation;
 
         recyclerView=dialog.findViewById(R.id.list);
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                    111);
-        }
-
-
-
-        //Generating list of passsord We use a dialog box to popup the list view items
 
 
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -94,17 +121,13 @@ public class randomepassword extends AppCompatActivity implements AdapterInterfa
             }
 
             @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
+            public void onStartTrackingTouch(SeekBar seekBar) {}
 
             @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
-            }
+            public void onStopTrackingTouch(SeekBar seekBar) {}
         });
     }
-    Switch upr,lwr,num,syml;
+
     Boolean upper=true;
     Boolean lower=true;
     Boolean number=true;
@@ -135,15 +158,12 @@ public class randomepassword extends AppCompatActivity implements AdapterInterfa
     @SuppressLint("SuspiciousIndentation")
     public void generate(View view){
 
-        upr=findViewById(R.id.switch1);
-        lwr=findViewById(R.id.switch2);
-        num=findViewById(R.id.switch3);
-        syml=findViewById(R.id.switch4);
+
         upper=upr.isChecked();
         lower=lwr.isChecked();
         number=num.isChecked();
         symbols=syml.isChecked();
-        EditText len=findViewById(R.id.length);
+
         if(len.getText().length()>0)
         length=(int)Integer.parseInt(String.valueOf(len.getText()));
         if(upper || lower || number || symbols){
@@ -190,7 +210,7 @@ public class randomepassword extends AppCompatActivity implements AdapterInterfa
         password_list.clear();
 
         if (seekcount == 0) {
-            password_list.add("Please select a value from the parameter");
+            Toast.makeText(this," Please select a value from the parameter", Toast.LENGTH_SHORT).show();
         } else {
             int temp = seekcount;
             while (temp > 0) {
@@ -207,19 +227,39 @@ public class randomepassword extends AppCompatActivity implements AdapterInterfa
         }
     }
     public void save(View v) {
-        if(seekcount>0) {
-
 
             Toast.makeText(this, "saved", Toast.LENGTH_SHORT).show();
-        }
+
     }
 
-    // Recycler view Button click listener
+    // Recycler view Button click listener to copy the item
     @Override
     public void onButtonClickListener(int pos) {
         ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
         ClipData clipdata = ClipData.newPlainText("text", password_list.get(pos));
         clipboard.setPrimaryClip(clipdata);
         Toast.makeText(this, "Password is copied", Toast.LENGTH_SHORT).show();
+    }
+  // reset button refrence
+    public void reset(View v){
+        len.setText("8");
+        generate(new View(this));
+        upr.setChecked(true);
+        lwr.setChecked(true);
+        num.setChecked(true);
+        syml.setChecked(true);
+        seekBar.setProgress(0);
+        text.setText("");
+        SharedPreferences pre=getSharedPreferences("OPTIONS",MODE_PRIVATE);
+        SharedPreferences.Editor editor=pre.edit();
+        editor.putBoolean("Upper",true);
+        editor.putBoolean("Lower",true);
+        editor.putBoolean("Number",true);
+        editor.putBoolean("Symbols",true);
+        editor.putInt("SeekBar",0);
+        editor.putString("Length","8");
+        editor.apply();
+
+
     }
 }
